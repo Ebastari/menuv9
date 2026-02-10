@@ -11,6 +11,13 @@ export interface FeatureDetail {
   image: string;
 }
 
+export interface FAQItem {
+  id: string;
+  question: string;
+  answer: string;
+  keywords: string[];
+}
+
 interface LayananPengaduanProps {
   language?: 'id' | 'en';
 }
@@ -26,7 +33,11 @@ const TRANSLATIONS = {
     assetId: "Digital Asset ID",
     finishBtn: "Selesai Membaca",
     supportTitle: "Butuh Pendalaman Teknis?",
-    supportDesc: "Gunakan Chatbox AI di bawah untuk mendapatkan rincian spesifik modul."
+    supportDesc: "Gunakan Chatbox AI di bawah untuk mendapatkan rincian spesifik modul.",
+    faqTitle: "Pertanyaan yang Sering Diajukan",
+    faqDesc: "Pelajari lebih lanjut tentang fitur dan manfaat My Montana AI",
+    expandFaq: "Buka",
+    collapseFaq: "Tutup"
   },
   en: {
     headerSub: "System Intelligence",
@@ -38,7 +49,11 @@ const TRANSLATIONS = {
     assetId: "Digital Asset ID",
     finishBtn: "Finish Reading",
     supportTitle: "Need Technical Deep-dive?",
-    supportDesc: "Use the AI Chatbox below to get specific module details."
+    supportDesc: "Use the AI Chatbox below to get specific module details.",
+    faqTitle: "Frequently Asked Questions",
+    faqDesc: "Learn more about My Montana AI features and benefits",
+    expandFaq: "Expand",
+    collapseFaq: "Collapse"
   }
 };
 
@@ -135,12 +150,57 @@ export const MONTANA_FEATURES = (lang: 'id' | 'en'): FeatureDetail[] => [
   }
 ];
 
+export const MONTANA_FAQ = (lang: 'id' | 'en'): FAQItem[] => [
+  {
+    id: 'faq-advantage',
+    question: lang === 'id' ? 'Apa keunggulan My Montana AI dibanding metode manual?' : 'What are the advantages of My Montana AI compared to manual methods?',
+    answer: lang === 'id' 
+      ? 'My Montana AI memberikan 3 keunggulan kunci: (1) Visibility - Dashboard real-time vs laporan manual 2-3 minggu. (2) Accuracy - ML prediction rate 92% vs intuisi manusia 60%. (3) Scalability - Manage 10 juta pohon dengan tim 50 orang vs 500 orang manual. Survival rate meningkat dari 48% menjadi 86%.'
+      : 'My Montana AI provides 3 key advantages: (1) Visibility - Real-time dashboard vs 2-3 week manual reports. (2) Accuracy - 92% ML prediction vs 60% human intuition. (3) Scalability - Manage 10 million trees with 50 people vs 500 manual. Survival rate increases from 48% to 86%.',
+    keywords: ['keunggulan', 'manfaat', 'efisiensi', 'accuracy', 'comparison']
+  },
+  {
+    id: 'faq-roi',
+    question: lang === 'id' ? 'Berapa lama ROI tercapai?' : 'How long does it take to achieve ROI?',
+    answer: lang === 'id'
+      ? 'Rata-rata klien mencapai ROI positif dalam 8-12 bulan melalui kombinasi operational savings (43% efisiensi) + carbon credit revenue. Contoh: investasi Rp 500 juta untuk 5,000 pohon menghasilkan Rp 280 juta savings + Rp 150 juta carbon credit = ROI 86% Year 1.'
+      : 'On average, clients achieve positive ROI within 8-12 months through operational savings (43% efficiency) + carbon credit revenue. Example: Rp 500M investment for 5,000 trees generates Rp 280M savings + Rp 150M carbon credit = 86% ROI Year 1.',
+    keywords: ['ROI', 'investasi', 'waktu', 'pengembalian', 'revenue']
+  },
+  {
+    id: 'faq-esg',
+    question: lang === 'id' ? 'Bagaimana My Montana AI membantu target ESG perusahaan?' : 'How does My Montana AI help meet company ESG targets?',
+    answer: lang === 'id'
+      ? 'My Montana AI mengukur serapan CO₂ per pohon berdasarkan jenis, lokasi, dan pertumbuhan. Hasil audit trail digital terverifikasi compliant ISO 14064. Data ini dapat diintegrasikan dengan TCFD, GRI reporting dan dimonetisasi sebagai carbon credit. Potensi revenue 30-50 juta per 1,000 pohon per tahun.'
+      : 'My Montana AI measures CO₂ absorption per tree by type, location, and growth. Digital audit trail verified ISO 14064 compliant. Data integrates with TCFD, GRI reporting and can be monetized as carbon credits. Potential revenue 30-50M per 1,000 trees annually.',
+    keywords: ['ESG', 'karbon', 'lingkungan', 'sustainability', 'TCFD']
+  },
+  {
+    id: 'faq-integration',
+    question: lang === 'id' ? 'Apakah dapat diintegrasikan dengan sistem existing?' : 'Can it be integrated with existing systems?',
+    answer: lang === 'id'
+      ? 'Ya, My Montana AI dilengkapi REST API, SDK, dan middleware untuk integrasi dengan SAP, Oracle, atau sistem ERP apapun. Setup integration biasanya 4-8 minggu tergantung kompleksitas sistem existing Anda.'
+      : 'Yes, My Montana AI has REST APIs, SDKs, and middleware for integration with SAP, Oracle, or any ERP system. Integration setup typically takes 4-8 weeks depending on your existing system complexity.',
+    keywords: ['integrasi', 'API', 'system', 'ERP', 'compatibility']
+  },
+  {
+    id: 'faq-security',
+    question: lang === 'id' ? 'Bagaimana keamanan data di My Montana AI?' : 'How is data security handled in My Montana AI?',
+    answer: lang === 'id'
+      ? 'Semua data dienkripsi end-to-end dengan encryption standard industri. Log akses digital tidak dapat diubah tanpa otorisasi manager. Backup redundan di multiple data center dengan disaster recovery plan. Compliant dengan ISO 27001 Information Security Management.'
+      : 'All data is encrypted end-to-end with industry-standard encryption. Digital access logs cannot be altered without manager authorization. Redundant backups across multiple data centers with disaster recovery plan. Compliant with ISO 27001 Information Security Management.',
+    keywords: ['keamanan', 'encrypsi', 'data', 'privacy', 'ISO 27001']
+  }
+];
+
 export const LayananPengaduan: React.FC<LayananPengaduanProps> = ({ language = 'id' }) => {
   const [selectedFeature, setSelectedFeature] = useState<FeatureDetail | null>(null);
+  const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
   // Fixed: explicitly cast language to expected keys to satisfy TS compiler
   const t = TRANSLATIONS[language as 'id' | 'en'];
   // Fixed: explicitly cast language to expected keys to satisfy TS compiler
   const features = MONTANA_FEATURES(language as 'id' | 'en');
+  const faq = MONTANA_FAQ(language as 'id' | 'en');
 
   const handleCloseDetail = () => {
     setSelectedFeature(null);
@@ -153,9 +213,9 @@ export const LayananPengaduan: React.FC<LayananPengaduanProps> = ({ language = '
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-4">
         <div className="flex flex-col">
           <h3 className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.4em] mb-4 leading-none">{t.headerSub}</h3>
-          <p className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter leading-none uppercase">
+          <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter leading-none uppercase">
             {language === 'id' ? 'Narasi Sistem' : 'System Narrative'} <span className="text-emerald-600">Montana AI</span>
-          </p>
+          </h1>
         </div>
         <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest max-w-sm text-right">
           {t.headerDesc}
@@ -177,9 +237,9 @@ export const LayananPengaduan: React.FC<LayananPengaduanProps> = ({ language = '
                 <i className={`fas ${f.icon}`}></i>
               </div>
               <div className="space-y-3">
-                <h4 className="text-[14px] font-black text-slate-900 dark:text-white uppercase tracking-tight leading-tight group-hover:text-emerald-600">
+                <h2 className="text-[14px] font-black text-slate-900 dark:text-white uppercase tracking-tight leading-tight group-hover:text-emerald-600">
                   {f.title}
-                </h4>
+                </h2>
                 <p className="text-[10px] leading-relaxed font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest line-clamp-2">
                   {f.highlight}
                 </p>
@@ -193,29 +253,34 @@ export const LayananPengaduan: React.FC<LayananPengaduanProps> = ({ language = '
       ) : (
         <div className="bg-white dark:bg-slate-900 rounded-[56px] border border-slate-100 dark:border-slate-800 shadow-2xl overflow-hidden animate-drift-puff">
           <div className="relative h-[300px] md:h-[400px]">
-            <img src={selectedFeature.image} alt={selectedFeature.title} className="w-full h-full object-cover" />
+            <img 
+              src={selectedFeature.image} 
+              alt={`${selectedFeature.title} - Montana AI Module: ${selectedFeature.highlight}`}
+              title={`Dokumentasi ${selectedFeature.title} dalam ekosistem Montana AI`}
+              className="w-full h-full object-cover" 
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
             <button onClick={handleCloseDetail} className="absolute top-8 left-8 flex items-center gap-3 px-6 py-3 bg-white/20 backdrop-blur-xl border border-white/30 text-white rounded-full text-[10px] font-black uppercase tracking-widest transition-all">
               <i className="fas fa-arrow-left"></i> {t.backBtn}
             </button>
             <div className="absolute bottom-12 left-12 right-12">
-               <h2 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter leading-none">{selectedFeature.title}</h2>
+               <h3 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter leading-none">{selectedFeature.title}</h3>
             </div>
           </div>
           <div className="p-12 md:p-20 bg-white dark:bg-slate-900">
             <div className="max-w-4xl mx-auto space-y-12">
                 <div className="flex items-center gap-6">
                   <div className="h-0.5 flex-1 bg-slate-100 dark:bg-slate-800"></div>
-                  <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.5em] shrink-0">{t.deepNarrative}</span>
+                  <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.5em] shrink-0">{t.deepNarrative}</h3>
                   <div className="h-0.5 flex-1 bg-slate-100 dark:bg-slate-800"></div>
                 </div>
-                <div className="prose dark:prose-invert max-w-none">
+                <article className="prose dark:prose-invert max-w-none">
                   {selectedFeature.longNarrative.split('\n\n').map((paragraph, i) => (
                     <p key={i} className="text-lg md:text-2xl font-medium text-slate-600 dark:text-slate-300 leading-relaxed text-justify mb-10 last:mb-0">
                       {paragraph}
                     </p>
                   ))}
-                </div>
+                </article>
               <div className="pt-12 border-t border-slate-50 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-8">
                 <div className="flex flex-col gap-2">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.assetId}</p>
@@ -243,6 +308,86 @@ export const LayananPengaduan: React.FC<LayananPengaduanProps> = ({ language = '
           </div>
           <i className="fas fa-arrow-right text-emerald-500 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-2 mr-4"></i>
         </div>
+      )}
+
+      {/* FAQ Section - SEO Optimized */}
+      {!selectedFeature && (
+        <section className="mt-24 px-4" itemScope itemType="https://schema.org/FAQPage">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white uppercase tracking-tight mb-4">
+                {t.faqTitle}
+              </h2>
+              <p className="text-sm md:text-base font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                {t.faqDesc}
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {faq.map((item) => (
+                <div 
+                  key={item.id}
+                  className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/40 dark:border-slate-800 rounded-2xl overflow-hidden transition-all duration-300 hover:border-emerald-500/40"
+                  itemScope
+                  itemProp="mainEntity"
+                  itemType="https://schema.org/Question"
+                >
+                  <button
+                    onClick={() => setExpandedFaq(expandedFaq === item.id ? null : item.id)}
+                    className="w-full px-6 md:px-8 py-5 md:py-6 flex items-center justify-between hover:bg-white/80 dark:hover:bg-slate-900/80 transition-colors text-left"
+                  >
+                    <h3 
+                      className="text-sm md:text-base font-black text-slate-900 dark:text-white uppercase tracking-tight flex-1 pr-4"
+                      itemProp="name"
+                    >
+                      {item.question}
+                    </h3>
+                    <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 flex-shrink-0 transition-transform duration-300 ${expandedFaq === item.id ? 'rotate-180' : ''}`}>
+                      <i className="fas fa-chevron-down text-sm"></i>
+                    </div>
+                  </button>
+
+                  {expandedFaq === item.id && (
+                    <div className="px-6 md:px-8 pb-6 border-t border-slate-100 dark:border-slate-800 animate-fadeIn">
+                      <div 
+                        className="text-sm md:text-base leading-relaxed text-slate-600 dark:text-slate-300 font-medium"
+                        itemScope
+                        itemProp="acceptedAnswer"
+                        itemType="https://schema.org/Answer"
+                      >
+                        <p itemProp="text" className="mb-3">
+                          {item.answer}
+                        </p>
+                        <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                          {item.keywords.map((kw, idx) => (
+                            <span 
+                              key={idx}
+                              className="text-[10px] md:text-[11px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-3 py-1.5 rounded-full uppercase tracking-tight"
+                            >
+                              #{kw}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-12 p-8 bg-gradient-to-r from-emerald-50 dark:from-emerald-950/30 to-transparent rounded-[32px] border border-emerald-200/50 dark:border-emerald-800/30 text-center">
+              <p className="text-sm md:text-base font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-4">
+                {language === 'id' ? 'Pertanyaan lain? Hubungi tim kami' : 'Other questions? Contact our team'}
+              </p>
+              <a 
+                href="mailto:support@montana-tech.info"
+                className="inline-block px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full text-[12px] font-black uppercase tracking-[0.2em] shadow-lg transition-all"
+              >
+                {language === 'id' ? 'Tanya Sekarang' : 'Ask Now'}
+              </a>
+            </div>
+          </div>
+        </section>
       )}
     </div>
   );
